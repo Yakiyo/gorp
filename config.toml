@@ -1,0 +1,40 @@
+# Configuration file for gorp.
+# 
+# This file is in the TOML (https://toml.io/) format.
+# Key names are case-insensitive. The following keys are
+# mandatory and the app won't run without them:
+# - ID
+# - State
+# - Details
+#
+# Other fields are optional, they can be either completely
+# removed or given empty string ("") values.
+
+# Id to the discord application, found from the developer portal
+id = "01234567890123456789"
+# Single line describing the current state
+state = "Custom Rich Presence"
+# Details of the app's current state
+details = "Using gorp"
+# Starting time of the timer. Use `now` to set it to current time
+# Otheriwse it should be empty to not set the timer, or use a valid
+# unix timestamp for setting the time.
+starttime = "now"
+# Ending time of the timer. Same things as `StartTime` apply for it
+endtime = ""
+
+# A list/array of buttons. Labels must be accompanied by a url.
+# Can only have a maximum of two buttons.
+buttons = [
+    { label = "first button", url = "https://example.com" },
+    { label = "second button", url = "https://example.com" },
+]
+
+# A list/array of images. The first image is always the larger image shown,
+# and the second one is the smaller one. Tooltips must be accompanied by a name.
+# Name is the snowflake/identifier of the image gotten from the developer portal.
+# Can only have a maximum of two images.
+images = [
+    { name = "image-a", tooltip = "The larger image" },
+    { name = "image-b", tooltip = "The smaller image"}
+]
