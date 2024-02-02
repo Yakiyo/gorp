@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 // a config to a rich presence instance
 type Config struct {
 	// app ID
@@ -32,4 +34,44 @@ type button struct {
 type image struct {
 	Name    string
 	Tooltip string
+}
+
+// Validate the config
+func (c *Config) Validate() error {
+	reqs := map[string]string{
+		"id":      c.Id,
+		"details": c.Details,
+		"state":   c.State,
+	}
+	for k, v := range reqs {
+		if v == "" {
+			return fmt.Errorf("required field `%v` is missing", k)
+		}
+	}
+	// find if any button has a `label` but not a url
+	invalid, button := satisfies[button](c.Buttons[:], func(b button) bool {
+		return b.Label != "" && b.Url == ""
+	})
+	if invalid {
+		return fmt.Errorf("button element has label `%v` but is missing a url, which is required", button.Label)
+	}
+
+	// find if any image has a tooltip value but no name
+	invalid, image := satisfies[image](c.Images[:], func(i image) bool {
+		return i.Tooltip != "" && i.Name == ""
+	})
+	if invalid {
+		return fmt.Errorf("image element has tooltip `%v` but is missing a name, which is required", image.Tooltip)
+	}
+	return nil
+}
+
+// check if any element of `arr` satisfies `f`
+func satisfies[T any](arr []T, f func(T) bool) (bool, *T) {
+	for _, v := range arr {
+		if f(v) {
+			return true, &v
+		}
+	}
+	return false, nil
 }
