@@ -20,7 +20,7 @@ var (
 	// the active config
 	config Config
 
-	configChan = make(chan string)
+	configChan = make(chan int)
 )
 
 func main() {
@@ -28,12 +28,10 @@ func main() {
 	if err != nil {
 		log.Error("initialization error", "err", err)
 	}
-	config, err = readConfig(configPath)
-	if err != nil {
-		log.Error("Error reading config file", "path", configPath, "err", err)
-	}
-	log.Info("Read config", "config", config)
-	
+	initTray()
+
+	go connect()
+
 	systray.Run(onReady, onExit)
 }
 
