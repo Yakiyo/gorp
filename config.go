@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+
+	"github.com/pelletier/go-toml/v2"
+)
 
 // a config to a rich presence instance
 type Config struct {
@@ -74,4 +79,15 @@ func satisfies[T any](arr []T, f func(T) bool) (bool, *T) {
 		}
 	}
 	return false, nil
+}
+
+// reads content from `path` into a `Config`
+func readConfig(path string) (Config, error) {
+	conf := Config{}
+	content, err := os.ReadFile(path)
+	if err != nil {
+		return conf, err
+	}
+	err = toml.Unmarshal(content, &conf)
+	return conf, err
 }
