@@ -3,7 +3,10 @@ package main
 import (
 	"fmt"
 	"os"
+	"strconv"
+	"time"
 
+	"github.com/hugolgst/rich-go/client"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -71,14 +74,35 @@ func (c *Config) Validate() error {
 	return nil
 }
 
-// check if any element of `arr` satisfies `f`
-func satisfies[T any](arr []T, f func(T) bool) (bool, *T) {
-	for _, v := range arr {
-		if f(v) {
-			return true, &v
-		}
+func (c *Config) asActivity() client.Activity {
+	act := client.Activity{
+		Details: c.Details,
+		State:   c.State,
 	}
-	return false, nil
+	if c.StartTime != "" {
+		*act.Timestamps.Start = asTime(c.StartTime)
+	}
+	if c.EndTime != "" {
+		*act.Timestamps.End = asTime(c.EndTime)
+	}
+	// if theres at least 1 image
+	if len(c.Images) > 0 {
+		act.LargeImage = c.Images[0].Name
+		act.LargeText = c.Images[0].Tooltip
+	}
+	// theres 2 images
+	if len(c.Images) == 2 {
+		act.SmallImage = c.Images[1].Name
+		act.SmallText = c.Images[1].Tooltip
+	}
+
+	for _, button := range c.Buttons {
+		act.Buttons = append(act.Buttons, &client.Button{
+			Label: button.Label,
+			Url:   button.Url,
+		})
+	}
+	return act
 }
 
 // reads content from `path` into a `Config`
@@ -89,5 +113,30 @@ func readConfig(path string) (Config, error) {
 		return conf, err
 	}
 	err = toml.Unmarshal(content, &conf)
+	if err != nil {
+		return conf, err
+	}
+	err = conf.Validate()
 	return conf, err
+}
+
+// check if any element of `arr` satisfies `f`
+func satisfies[T any](arr []T, f func(T) bool) (bool, *T) {
+	for _, v := range arr {
+		if f(v) {
+			return true, &v
+		}
+	}
+	return false, nil
+}
+
+func asTime(s string) time.Time {
+	if s == "now" {
+		return time.Now()
+	}
+	n, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return time.Now()
+	}
+	return time.Unix(n, 0)
 }

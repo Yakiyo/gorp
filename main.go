@@ -19,8 +19,6 @@ var (
 
 	// the active config
 	config Config
-
-	configChan = make(chan int)
 )
 
 func main() {
@@ -28,9 +26,8 @@ func main() {
 	if err != nil {
 		log.Error("initialization error", "err", err)
 	}
-	initTray()
+	// initTray()
 
-	go connect()
 
 	systray.Run(onReady, onExit)
 }

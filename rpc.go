@@ -16,14 +16,14 @@ func connect() {
 	config, err = readConfig(configPath)
 	if err != nil {
 		log.Error("Error reading config file", "path", configPath, "err", err)
-		setError(err)
+		errCh <- err
 	}
 	log.Info("Read config", "config", config)
 
 	err = client.Login(config.Id)
 	if err != nil {
 		log.Error("Error when creating connection", "err", err)
-		setError(err)
+		errCh <- err
 		return
 	}
 }

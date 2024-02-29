@@ -6,38 +6,57 @@ import (
 
 	"github.com/charmbracelet/log"
 	"github.com/getlantern/systray"
+	"github.com/hugolgst/rich-go/client"
 )
 
 // global declarations to different menu items
-var errMenu, reloadB, quitB *systray.MenuItem
+// var errMenu, reloadB, quitB *systray.MenuItem
 
-func initTray() {
-	systray.SetTemplateIcon(icon, icon)
-	systray.SetTitle("gorp")
-	systray.SetTooltip("Rich Presence Client for Discord")
-	reloadB = systray.AddMenuItem("Reload", "Reload config")
-	quitB = systray.AddMenuItem("Quit", "Stop application")
-	errMenu = systray.AddMenuItem("Errors", "Error detected")
-	errMenu.Hide()
-}
+var errCh = make(chan error)
+
+// func initTray() {
+// 	// systray.SetIcon(icon)
+// 	systray.SetTitle("gorp")
+// 	systray.SetTooltip("Rich Presence Client for Discord")
+// 	reloadB = systray.AddMenuItem("Reload", "Reload config")
+// 	quitB = systray.AddMenuItem("Quit", "Stop application")
+// 	errMenu = systray.AddMenuItem("Errors", "Error detected")
+// 	errMenu.Hide()
+// }
 
 func onReady() {
+	systray.SetIcon(icon)
+	systray.SetTitle("gorp")
+	systray.SetTooltip("Rich Presence Client for Discord")
+	reloadB := systray.AddMenuItem("Reload", "Reload config")
+	quitB := systray.AddMenuItem("Quit", "Stop application")
+	errMenu := systray.AddMenuItem("Errors", "Error detected")
+	errMenu.Hide()
+	connect()
+
 	go func() {
 		for {
 			select {
 			case <-quitB.ClickedCh:
 				systray.Quit()
+			case err := <-errCh:
+				errMenu.SetTitle(fmt.Sprintf("error: %v", err))
+				errMenu.Show()
 			case <-reloadB.ClickedCh:
 				conf, err := readConfig(configPath)
 				if err != nil {
 					log.Error("Error when reloading config", "err", err)
-					setError(err)
+					// setError(err)
 					break
 				} else {
 					errMenu.Hide()
 				}
 				config = conf
-				configChan <- 0
+				err = client.SetActivity(config.asActivity())
+				if err != nil {
+					log.Error("Error when setting activity", "err", err)
+					errCh <- err
+				}
 			}
 		}
 	}()
@@ -45,10 +64,10 @@ func onReady() {
 
 func onExit() {
 	log.Info("Shutting down app")
-	// TODO: shutdown rpc client
+	client.Logout()
 }
 
-func setError(err error) {
-	errMenu.SetTitle(fmt.Sprintf("error: %v", err))
-	errMenu.Show()
-}
+// func setError(err error) {
+// 	errMenu.SetTitle(fmt.Sprintf("error: %v", err))
+// 	errMenu.Show()
+// }
