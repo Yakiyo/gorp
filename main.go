@@ -1,6 +1,8 @@
 package main
 
 import (
+	"errors"
+	"fmt"
 	"os"
 	"path/filepath"
 
@@ -12,24 +14,58 @@ import (
 )
 
 var (
-	gerr error
-	// config Config
+	// home directory
 	hdir string
+	// the path to the config file being used
+	configPath string
+
+	// the active config
+	config Config
 )
 
 func main() {
-	if gerr != nil {
-		return
+	err := Init()
+	if err != nil {
+		log.Error("initialization error", "err", err)
 	}
+	config, err = readConfig(configPath)
+	if err != nil {
+		log.Error("Error reading config file", "path", configPath, "err", err)
+	}
+	fmt.Println(config)
 }
 
-func init() {
+func Init() error {
 	dir, err := homedir.Dir()
 	if err != nil {
-		gerr = err
-		return
+		return err
 	}
 	hdir = dir
 	logfile := filepath.Join(hdir, ".gorp", "gorp.log")
+	// if log file exists, truncate it
+	if pathExists(logfile) {
+		err := os.Truncate(logfile, 0)
+		// this is not fatal, so we just log it, no need for exiting the application
+		if err != nil {
+			log.Error("error when truncating previous log file", "err", err)
+		}
+	}
 	log.SetOutput(os.NewFile(uintptr(os.ModePerm), logfile))
+
+	// config path at ~/.gorp/config.toml
+	configPath = filepath.Join(hdir, ".gorp", "config.toml")
+	// if the first one doesn't exist, try at ~/.config/gorp.toml
+	if !pathExists(configPath) {
+		configPath = filepath.Join(hdir, ".config", "gorp.toml")
+		// if even that doesn't exist, try in current directory
+		if !pathExists(configPath) {
+			configPath = "./config.toml"
+		}
+	}
+	// if theres still no config file, return error
+	if !pathExists(configPath) {
+		return errors.New("unable to find config file")
+	}
+	log.Info("detected config file", "path", configPath)
+	return nil
 }
