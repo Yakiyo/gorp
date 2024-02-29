@@ -2,15 +2,13 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"os"
 	"path/filepath"
 
 	"github.com/charmbracelet/log"
-	_ "github.com/getlantern/systray"
+	"github.com/getlantern/systray"
 	_ "github.com/hugolgst/rich-go/client"
 	homedir "github.com/mitchellh/go-homedir"
-	_ "github.com/pelletier/go-toml/v2"
 )
 
 var (
@@ -21,6 +19,8 @@ var (
 
 	// the active config
 	config Config
+
+	configChan = make(chan string)
 )
 
 func main() {
@@ -32,7 +32,9 @@ func main() {
 	if err != nil {
 		log.Error("Error reading config file", "path", configPath, "err", err)
 	}
-	fmt.Println(config)
+	log.Info("Read config", "config", config)
+	
+	systray.Run(onReady, onExit)
 }
 
 func Init() error {
