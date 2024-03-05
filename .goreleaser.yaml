@@ -67,20 +67,20 @@ scoops:
       name: "{{ .ProjectName }}"
       branch: "main"
 
-brews:
-  - name: "{{ .ProjectName }}"
-    # available in goreleaser pro
-    # alternative_names:
-    #   - "{{ .ProjectName }}@{{ .Version }}"
-    #   - "{{ .ProjectName }}@{{ .Major }}"
-    commit_author:
-      name: goreleaserbot
-      email: bot@goreleaser.com
-    commit_msg_template: "Update brew formula to {{ .ProjectName }} version {{ .Tag }}"
-    folder: "share/brew"
-    homepage: "https://github.com/Yakiyo/gorp"
-    license: "MIT"
-    repository:
-      owner: "Yakiyo"
-      name: "{{ .ProjectName }}"
-      branch: "main"
+# brews:
+#   - name: "{{ .ProjectName }}"
+#     # available in goreleaser pro
+#     # alternative_names:
+#     #   - "{{ .ProjectName }}@{{ .Version }}"
+#     #   - "{{ .ProjectName }}@{{ .Major }}"
+#     commit_author:
+#       name: goreleaserbot
+#       email: bot@goreleaser.com
+#     commit_msg_template: "Update brew formula to {{ .ProjectName }} version {{ .Tag }}"
+#     folder: "share/brew"
+#     homepage: "https://github.com/Yakiyo/gorp"
+#     license: "MIT"
+#     repository:
+#       owner: "Yakiyo"
+#       name: "{{ .ProjectName }}"
+#       branch: "main"
