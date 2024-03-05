@@ -19,7 +19,10 @@ builds:
         {{- if eq .Os "windows" }}-H=windowsgui{{- end }}
     ignore:
       - goos: "linux"
-        goarch: "386"
+      - goos: "darwin"
+      - goos: "windows"
+        goarch: "arm64"
+      #  goarch: "386"
       #- goos: "linux"
       #  goarch: "amd64"
       #- goos: "windows"
