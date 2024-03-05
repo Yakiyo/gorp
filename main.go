@@ -7,7 +7,6 @@ import (
 
 	"github.com/charmbracelet/log"
 	"github.com/getlantern/systray"
-	_ "github.com/hugolgst/rich-go/client"
 	homedir "github.com/mitchellh/go-homedir"
 )
 
@@ -16,19 +15,14 @@ var (
 	hdir string
 	// the path to the config file being used
 	configPath string
-
-	// the active config
-	config Config
 )
 
 func main() {
 	err := Init()
 	if err != nil {
 		log.Error("initialization error", "err", err)
+		return
 	}
-	// initTray()
-
-
 	systray.Run(onReady, onExit)
 }
 

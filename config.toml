@@ -11,7 +11,7 @@
 # removed or given empty string ("") values.
 
 # Id to the discord application, found from the developer portal
-id = "01234567890123456789"
+id = "844575525522767872"
 # Single line describing the current state
 state = "Custom Rich Presence"
 # Details of the app's current state
@@ -35,6 +35,6 @@ buttons = [
 # Name is the snowflake/identifier of the image gotten from the developer portal.
 # Can only have a maximum of two images.
 images = [
-    { name = "image-a", tooltip = "The larger image" },
-    { name = "image-b", tooltip = "The smaller image"}
+    { name = "tbate", tooltip = "The larger image" },
+    { name = "small", tooltip = "The smaller image"}
 ]
