@@ -1,0 +1,22 @@
+{
+    "version": "0.1.0",
+    "architecture": {
+        "32bit": {
+            "url": "https://github.com/Yakiyo/gorp/releases/download/v0.1.0/gorp_Windows_i386.zip",
+            "bin": [
+                "gorp.exe"
+            ],
+            "hash": "0c9c155ea222a6d5c358438e35aee9ab73ea1badf615d83b1e60bd5d19d2e642"
+        },
+        "64bit": {
+            "url": "https://github.com/Yakiyo/gorp/releases/download/v0.1.0/gorp_Windows_x86_64.zip",
+            "bin": [
+                "gorp.exe"
+            ],
+            "hash": "f0ccdf551539f3f6e72fb56b0f5001da61c61adce1feb13e29b1a67f572f2066"
+        }
+    },
+    "homepage": "https://github.com/Yakiyo/gorp",
+    "license": "MIT",
+    "description": "gorp version v0.1.0"
+}
