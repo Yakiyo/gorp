@@ -17,9 +17,9 @@ builds:
     ldflags:
       - >- 
         {{- if eq .Os "windows" }}-H=windowsgui{{- end }}
-    #ignore:
-     # - goos: "linux"
-      #  goarch: "386"
+    ignore:
+      - goos: "linux"
+        goarch: "386"
       #- goos: "linux"
       #  goarch: "amd64"
       #- goos: "windows"
