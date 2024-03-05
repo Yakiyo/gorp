@@ -4,7 +4,7 @@ import (
 	"os"
 
 	"github.com/charmbracelet/log"
-	"github.com/getlantern/systray"
+	"fyne.io/systray"
 	"github.com/hugolgst/rich-go/client"
 )
 
