@@ -1,62 +1,63 @@
 package main
 
 import (
-	"errors"
 	"os"
-	"path/filepath"
 
 	"github.com/charmbracelet/log"
 	"github.com/getlantern/systray"
-	homedir "github.com/mitchellh/go-homedir"
+	"github.com/hugolgst/rich-go/client"
 )
 
-var (
-	// home directory
-	hdir string
-	// the path to the config file being used
-	configPath string
-)
+var rch = make(chan bool)
 
 func main() {
-	err := Init()
-	if err != nil {
-		log.Error("initialization error", "err", err)
-		return
-	}
-	systray.Run(onReady, onExit)
+	go initClient(rch)
+	systray.Run(onReady, client.Logout)
 }
 
-func Init() error {
-	dir, err := homedir.Dir()
-	if err != nil {
-		return err
-	}
-	hdir = dir
-	logfile := filepath.Join(hdir, ".gorp", "gorp.log")
-	// if log file exists, truncate it
-	if pathExists(logfile) {
-		err := os.Truncate(logfile, 0)
-		// this is not fatal, so we just log it, no need for exiting the application
-		if err != nil {
-			log.Error("error when truncating previous log file", "err", err)
-		}
-	}
-	log.SetOutput(os.NewFile(uintptr(os.ModePerm), logfile))
+func onReady() {
+	systray.SetIcon(icon)
+	systray.SetTitle("gorp")
+	systray.SetTooltip("Rich Presence Client for Discord")
+	reloadB := systray.AddMenuItem("Reload", "Reload config")
+	quitB := systray.AddMenuItem("Quit", "Stop application")
+	reloadB.SetTooltip("Reload config")
+	quitB.SetTooltip("Stop the application")
 
-	// config path at ~/.gorp/config.toml
-	configPath = filepath.Join(hdir, ".gorp", "config.toml")
-	// if the first one doesn't exist, try at ~/.config/gorp.toml
-	if !pathExists(configPath) {
-		configPath = filepath.Join(hdir, ".config", "gorp.toml")
-		// if even that doesn't exist, try in current directory
-		if !pathExists(configPath) {
-			configPath = "./config.toml"
+	defer systray.Quit()
+	// for initializing the config for the first time
+	rch <- true
+	for {
+		select {
+		case <-quitB.ClickedCh:
+			systray.Quit()
+		case <-reloadB.ClickedCh:
+			rch <- true
 		}
 	}
-	// if theres still no config file, return error
-	if !pathExists(configPath) {
-		return errors.New("unable to find config file")
+}
+
+func initClient(ch chan (bool)) {
+	if !pathExists("config.toml") {
+		log.Error("missing config.toml file in current directory")
+		os.Exit(1)
 	}
-	log.Info("detected config file", "path", configPath)
-	return nil
+	logged := false
+	for {
+		<-ch
+		c, err := readConfig("config.toml")
+		if err != nil {
+			log.Error("error when reading config", "err", err)
+			continue
+		}
+		if logged {
+			client.Logout()
+		}
+		client.Login(c.Id)
+		err = client.SetActivity(c.asActivity())
+		if err != nil {
+			log.Error("error setting activity", "err", err)
+			continue
+		}
+	}
 }

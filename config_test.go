@@ -19,7 +19,7 @@ func TestConfig(t *testing.T) {
 		t.Fatal(err)
 	}
 	expected := Config{
-		Id:        "01234567890123456789",
+		Id:        "844575525522767872",
 		State:     "Custom Rich Presence",
 		Details:   "Using gorp",
 		StartTime: "now",
@@ -36,11 +36,11 @@ func TestConfig(t *testing.T) {
 		},
 		Images: [2]image{
 			{
-				Name:    "image-a",
+				Name:    "tbate",
 				Tooltip: "The larger image",
 			},
 			{
-				Name:    "image-b",
+				Name:    "small",
 				Tooltip: "The smaller image",
 			},
 		},

@@ -76,14 +76,17 @@ func (c *Config) Validate() error {
 
 func (c *Config) asActivity() client.Activity {
 	act := client.Activity{
-		Details: c.Details,
-		State:   c.State,
+		Details:    c.Details,
+		State:      c.State,
+		Timestamps: &client.Timestamps{},
 	}
 	if c.StartTime != "" {
-		*act.Timestamps.Start = asTime(c.StartTime)
+		time := asTime(c.StartTime)
+		act.Timestamps.Start = &time
 	}
 	if c.EndTime != "" {
-		*act.Timestamps.End = asTime(c.EndTime)
+		time := asTime(c.EndTime)
+		act.Timestamps.End = &time
 	}
 	// if theres at least 1 image
 	if len(c.Images) > 0 {
