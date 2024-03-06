@@ -52,8 +52,10 @@ func initClient(ch chan (bool)) {
 		}
 		if logged {
 			client.Logout()
+			logged = false
 		}
 		client.Login(c.Id)
+		logged = true
 		err = client.SetActivity(c.asActivity())
 		if err != nil {
 			log.Error("error setting activity", "err", err)
